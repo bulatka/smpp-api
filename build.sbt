@@ -1,4 +1,4 @@
-name := "scala-api"
+name := "smpp-api"
 
 version := "1.0"
 
