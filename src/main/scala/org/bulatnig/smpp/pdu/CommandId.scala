@@ -1,5 +1,8 @@
 package org.bulatnig.smpp.pdu
 
+/**
+ * Constant names break Scala convention to correspond protocol
+ */
 object CommandId {
 
   val bind_receiver = 0x00000001

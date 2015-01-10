@@ -36,13 +36,48 @@ class BufferSuite extends FunSuite {
     assert(buffer.toHexString == "01020304")
   }
 
+  test("Buffer create from buffer and array should work") {
+    val b1 = new Buffer(Array[Byte](1, 2, 3, 4))
+    val a = Array[Byte](5, 6, 7, 8)
+    val b2 = b1 ++ a
+    assert(b2.toArray === Array[Byte](1, 2, 3, 4, 5, 6, 7, 8))
+  }
+
+  test("Buffer create from buffer and array should not change sources") {
+    val b1 = new Buffer(Array[Byte](1, 2, 3, 4))
+    val a = Array[Byte](5, 6, 7, 8)
+    val b2 = b1 ++ a
+    assert(b1.toArray === Array[Byte](1, 2, 3, 4))
+    assert(a === Array[Byte](5, 6, 7, 8))
+  }
+
+  test("Buffer create from buffer and buffer should work") {
+    val b1 = new Buffer(Array[Byte](1, 2, 3, 4))
+    val b2 = new Buffer(Array[Byte](5, 6, 7, 8))
+    val b3 = b1 ++ b2
+    assert(b3.toArray === Array[Byte](1, 2, 3, 4, 5, 6, 7, 8))
+  }
+
+  test("Buffer create from buffer and buffer should not change sources") {
+    val b1 = new Buffer(Array[Byte](1, 2, 3, 4))
+    val b2 = new Buffer(Array[Byte](5, 6, 7, 8))
+    val b3 = b1 ++ b2
+    assert(b1.toArray === Array[Byte](1, 2, 3, 4))
+    assert(b2.toArray === Array[Byte](5, 6, 7, 8))
+  }
+
   test("Byte array append should work") {
-    val a = Array[Byte](1, 2, 3, 4)
-    val buffer = new Buffer()
+    val buffer = new Buffer(Array[Byte](1, 2, 3, 4))
+    val a = Array[Byte](5, 6, 7, 8)
     buffer ++= a
-    assert(buffer.length == a.length)
-    assert(buffer.toArray === a)
-    assert(buffer.toHexString == "01020304")
+    assert(buffer.toArray === Array[Byte](1, 2, 3, 4, 5, 6, 7, 8))
+  }
+
+  test("Buffer append should work") {
+    val b1 = new Buffer(Array[Byte](1, 2, 3, 4))
+    val b2 = new Buffer(Array[Byte](5, 6, 7, 8))
+    b1 ++= b2
+    assert(b1.toArray === Array[Byte](1, 2, 3, 4, 5, 6, 7, 8))
   }
 
   test("Byte append should work") {

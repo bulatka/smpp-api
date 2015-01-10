@@ -1,5 +1,8 @@
 package org.bulatnig.smpp.pdu
 
+/**
+ * Constant names break Scala convention to correspond protocol
+ */
 object CommandStatus {
 
   val ESME_ROK = 0x00000000 // No Error

@@ -19,8 +19,25 @@ class Buffer {
 
   def length = buffer.length
 
+  def ++(xs: TraversableOnce[Byte]) = {
+    val newBuffer = new Buffer(buffer)
+    newBuffer ++= xs
+    newBuffer
+  }
+
+  def ++(xs: Buffer) = {
+    val newBuffer = new Buffer(buffer)
+    newBuffer ++= xs
+    newBuffer
+  }
+
   def ++=(xs: TraversableOnce[Byte]) = {
     buffer ++= xs
+    this
+  }
+
+  def ++=(xs: Buffer) = {
+    buffer ++= xs.toArray
     this
   }
 
