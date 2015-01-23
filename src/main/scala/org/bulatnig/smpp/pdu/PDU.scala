@@ -2,10 +2,13 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
+import scala.collection.mutable
+
 abstract class PDU(val commandId: Int) {
 
   var commandStatus = CommandStatus.ESME_ROK
   var sequenceNumber = 0
+  val tlvs = new mutable.HashMap[Int, TLV]()
 
   def toBuffer() = {
     val body = getBodyBytes()
@@ -22,7 +25,7 @@ abstract class PDU(val commandId: Int) {
 
   protected def getStdParamBytes() = new Buffer()
 
-  protected def getTlvBytes() = new Buffer()
+  protected def getTlvBytes() = tlvs.values.foldLeft(new Buffer()) { (buffer, tlv) => buffer ++= tlv.toBuffer()}
 
   def commandLength() = toBuffer().length
 
