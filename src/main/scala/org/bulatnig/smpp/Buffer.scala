@@ -1,9 +1,12 @@
 package org.bulatnig.smpp
 
-import java.nio.charset.{Charset, StandardCharsets}
+import java.nio.charset.StandardCharsets
 
 import scala.collection.mutable.ArrayBuffer
 
+/**
+ * Mutable. Not thread-safe.
+ */
 class Buffer {
 
   val buffer = new ArrayBuffer[Byte]()
@@ -60,7 +63,7 @@ class Buffer {
     this
   }
 
-  def appendCString(elem: String) = {
+  def appendString(elem: String) = {
     if (elem != null) {
       this ++= elem.getBytes(StandardCharsets.US_ASCII)
     }
@@ -68,11 +71,11 @@ class Buffer {
     this
   }
 
-  def appendString(elem: String, charset: Charset) = {
-    if (elem != null) {
-      this ++= elem.getBytes(charset)
-    }
-    this
+  def read(length: Int) = {
+    val bytes = new Array[Byte](length)
+    Array.copy(buffer.toArray, position, bytes, 0, bytes.length)
+    position += length
+    bytes
   }
 
   def readByte(): Int = {
@@ -96,7 +99,7 @@ class Buffer {
     result
   }
 
-  def readCString(): String = {
+  def readString(): String = {
     val idx = buffer.indexOf(Buffer.NULL, position)
     if (idx == -1) throw new IndexOutOfBoundsException("C-Octet String termination not found")
     var result: String = null
@@ -106,14 +109,6 @@ class Buffer {
       result = new String(bytes, StandardCharsets.US_ASCII)
     }
     position = idx + 1
-    result
-  }
-
-  def readString(length: Int, charset: Charset): String = {
-    val bytes = new Array[Byte](length)
-    Array.copy(buffer.toArray, position, bytes, 0, bytes.length)
-    val result = new String(bytes, charset)
-    position += length
     result
   }
 

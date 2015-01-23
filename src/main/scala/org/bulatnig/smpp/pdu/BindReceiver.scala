@@ -14,13 +14,13 @@ class BindReceiver extends PDU(CommandId.bind_receiver) {
 
   override protected def getStdParamBytes() = {
     val buffer = new Buffer()
-    buffer.appendCString(systemId)
-    buffer.appendCString(password)
-    buffer.appendCString(systemType)
+    buffer.appendString(systemId)
+    buffer.appendString(password)
+    buffer.appendString(systemType)
     buffer.appendByte(interfaceVersion)
     buffer.appendByte(addrTon)
     buffer.appendByte(addrNpi)
-    buffer.appendCString(addressRange)
+    buffer.appendString(addressRange)
     buffer
   }
 }

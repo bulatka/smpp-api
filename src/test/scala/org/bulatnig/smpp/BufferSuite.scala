@@ -1,7 +1,5 @@
 package org.bulatnig.smpp
 
-import java.nio.charset.StandardCharsets
-
 import org.scalatest.FunSuite
 
 import scala.collection.mutable.ArrayBuffer
@@ -86,6 +84,20 @@ class BufferSuite extends FunSuite {
     assert(buffer.toHexString == "80")
   }
 
+  test("Bytes read should work") {
+    val buffer = new Buffer()
+    buffer.appendByte(1)
+    assert(buffer.read(1) === Array[Byte](1))
+  }
+
+  test("Bytes read out of bound should produce IndexOutOfBoundsException") {
+    val buffer = new Buffer()
+    buffer.appendByte(128)
+    intercept[IndexOutOfBoundsException] {
+      buffer.read(2)
+    }
+  }
+
   test("Byte read should work") {
     val buffer = new Buffer()
     buffer.appendByte(128)
@@ -97,7 +109,7 @@ class BufferSuite extends FunSuite {
     buffer.appendByte(128)
     buffer.readByte()
     intercept[IndexOutOfBoundsException] {
-      new Buffer().readByte()
+      buffer.readByte()
     }
   }
 
@@ -125,7 +137,7 @@ class BufferSuite extends FunSuite {
     buffer.appendShort(50000)
     buffer.readShort()
     intercept[IndexOutOfBoundsException] {
-      new Buffer().readShort()
+      buffer.readShort()
     }
   }
 
@@ -153,20 +165,20 @@ class BufferSuite extends FunSuite {
     buffer.appendInt(12345)
     buffer.readInt()
     intercept[IndexOutOfBoundsException] {
-      new Buffer().readInt()
+      buffer.readInt()
     }
   }
 
   test("C-Octet String append should work") {
     val buffer = new Buffer()
-    buffer.appendCString("smpp")
+    buffer.appendString("smpp")
     assert(buffer.toArray === Array[Byte](115, 109, 112, 112, 0))
     assert(buffer.toHexString == "736D707000")
   }
 
   test("C-Octet String append null should work") {
     val buffer = new Buffer()
-    buffer.appendCString(null)
+    buffer.appendString(null)
     assert(buffer.toArray === Array[Byte](0))
     assert(buffer.toHexString == "00")
   }
@@ -174,68 +186,34 @@ class BufferSuite extends FunSuite {
   test("C-Octet String read should work") {
     val s = "hello world"
     val buffer = new Buffer()
-    buffer.appendCString(s)
-    assert(buffer.readCString() == s)
+    buffer.appendString(s)
+    assert(buffer.readString() == s)
   }
 
   test("C-Octet String read null should work") {
     val buffer = new Buffer()
-    buffer.appendCString(null)
-    assert(buffer.readCString() == null)
+    buffer.appendString(null)
+    assert(buffer.readString() == null)
   }
 
   test("C-Octet String  read out of bound should produce IndexOutOfBoundsException") {
     val buffer = new Buffer()
-    buffer.appendCString(null)
-    buffer.readCString()
+    buffer.appendString(null)
+    buffer.readString()
     intercept[IndexOutOfBoundsException] {
-      new Buffer().readCString()
-    }
-  }
-
-  test("Octet String append should work") {
-    val buffer = new Buffer()
-    buffer.appendString("Привет", StandardCharsets.UTF_16BE)
-    assert(buffer.toHexString == "041F04400438043204350442")
-  }
-
-  test("Octet String append null should work") {
-    val buffer = new Buffer()
-    buffer.appendString(null, StandardCharsets.UTF_16BE)
-    assert(buffer.toHexString == "")
-  }
-
-  test("Octet String read should work") {
-    val s = "Привет"
-    val buffer = new Buffer()
-    buffer.appendString(s, StandardCharsets.UTF_16BE)
-    assert(buffer.readString(12, StandardCharsets.UTF_16BE) == s)
-  }
-
-  test("Octet String read null should work") {
-    val buffer = new Buffer()
-    buffer.appendString(null, StandardCharsets.UTF_16BE)
-    assert(buffer.readString(0, StandardCharsets.UTF_16BE) == "")
-  }
-
-  test("Octet String  read out of bound should produce IndexOutOfBoundsException") {
-    val buffer = new Buffer()
-    buffer.appendString("smpp", StandardCharsets.US_ASCII)
-    buffer.readString(4, StandardCharsets.US_ASCII)
-    intercept[IndexOutOfBoundsException] {
-      new Buffer().readString(1, StandardCharsets.US_ASCII)
+      buffer.readString()
     }
   }
 
   test("Append chaining should work") {
     val buffer = new Buffer()
-    buffer.appendByte(1).appendShort(2).appendInt(3).appendCString("hello").appendString("Привет", StandardCharsets.UTF_16BE)
-    assert(buffer.length == 25)
+    buffer.appendByte(1).appendShort(2).appendInt(3).appendString("hello").++=(Array[Byte](1,2,3,4))
+    assert(buffer.length == 17)
     assert(buffer.readByte() == 1)
     assert(buffer.readShort() == 2)
     assert(buffer.readInt() == 3)
-    assert(buffer.readCString() == "hello")
-    assert(buffer.readString(12, StandardCharsets.UTF_16BE) == "Привет")
+    assert(buffer.readString() == "hello")
+    assert(buffer.read(4) === Array[Byte](1,2,3,4))
   }
 
   test("rewind should let read buffer from the start") {
