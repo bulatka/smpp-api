@@ -11,7 +11,7 @@ class Buffer {
 
   val buffer = new ArrayBuffer[Byte]()
 
-  private var position = 0
+  private var _position = 0
 
   def this(array: TraversableOnce[Byte]) {
     this()
@@ -19,8 +19,8 @@ class Buffer {
   }
 
   def toArray = buffer.toArray
-
   def length = buffer.length
+  def position = _position
 
   def ++(xs: TraversableOnce[Byte]) = {
     val newBuffer = new Buffer(buffer)
@@ -73,47 +73,47 @@ class Buffer {
 
   def read(length: Int) = {
     val bytes = new Array[Byte](length)
-    Array.copy(buffer.toArray, position, bytes, 0, bytes.length)
-    position += length
+    Array.copy(buffer.toArray, _position, bytes, 0, bytes.length)
+    _position += length
     bytes
   }
 
   def readByte(): Int = {
-    val result = buffer(position) & 0xFF
-    position += 1
+    val result = buffer(_position) & 0xFF
+    _position += 1
     result
   }
 
   def readShort(): Int = {
-    val result = ((buffer(position) & 0xFF) << 8) | (buffer(position + 1) & 0xFF)
-    position += 2
+    val result = ((buffer(_position) & 0xFF) << 8) | (buffer(_position + 1) & 0xFF)
+    _position += 2
     result
   }
 
   def readInt(): Int = {
-    val result = (buffer(position) << 24) |
-      ((buffer(position + 1) & 0xFF) << 16) |
-      ((buffer(position + 2) & 0xFF) << 8) |
-      (buffer(position + 3) & 0xFF)
-    position += 4
+    val result = (buffer(_position) << 24) |
+      ((buffer(_position + 1) & 0xFF) << 16) |
+      ((buffer(_position + 2) & 0xFF) << 8) |
+      (buffer(_position + 3) & 0xFF)
+    _position += 4
     result
   }
 
   def readString(): String = {
-    val idx = buffer.indexOf(Buffer.NULL, position)
+    val idx = buffer.indexOf(Buffer.NULL, _position)
     if (idx == -1) throw new IndexOutOfBoundsException("C-Octet String termination not found")
     var result: String = null
-    if (idx > position) {
-      val bytes = new Array[Byte](idx - position)
-      Array.copy(buffer.toArray, position, bytes, 0, bytes.length)
+    if (idx > _position) {
+      val bytes = new Array[Byte](idx - _position)
+      Array.copy(buffer.toArray, _position, bytes, 0, bytes.length)
       result = new String(bytes, StandardCharsets.US_ASCII)
     }
-    position = idx + 1
+    _position = idx + 1
     result
   }
 
   def rewind() = {
-    position = 0
+    _position = 0
     this
   }
 

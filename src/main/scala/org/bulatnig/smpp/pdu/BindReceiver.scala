@@ -12,6 +12,21 @@ class BindReceiver extends PDU(CommandId.bind_receiver) {
   var addrNpi = 0
   var addressRange: String = null
 
+  def this(buffer: Buffer) {
+    this()
+    parse(buffer)
+  }
+
+  override protected def parseStdParams(buffer: Buffer) {
+    systemId = buffer.readString()
+    password = buffer.readString()
+    systemType = buffer.readString()
+    interfaceVersion = buffer.readByte()
+    addrTon = buffer.readByte()
+    addrNpi = buffer.readByte()
+    addressRange = buffer.readString()
+  }
+
   override protected def getStdParamBytes() = {
     val buffer = new Buffer()
     buffer.appendString(systemId)
