@@ -11,14 +11,23 @@ abstract class PDU(val commandId: Int) {
   val tlvs = new mutable.HashMap[Int, TLV]()
 
   def toBuffer() = {
-    val body = getBodyBytes()
-    val buffer = new Buffer()
-    buffer.appendInt(PDU.HeaderLength + body.length)
-    buffer.appendInt(commandId)
-    buffer.appendInt(commandStatus)
-    buffer.appendInt(sequenceNumber)
-    buffer ++= body
-    buffer
+    if (CommandStatus.ESME_ROK == commandStatus) {
+      val body = getBodyBytes()
+      val buffer = new Buffer()
+      buffer.appendInt(PDU.HeaderLength + body.length)
+      buffer.appendInt(commandId)
+      buffer.appendInt(commandStatus)
+      buffer.appendInt(sequenceNumber)
+      buffer ++= body
+      buffer
+    } else {
+      val buffer = new Buffer()
+      buffer.appendInt(PDU.HeaderLength)
+      buffer.appendInt(commandId)
+      buffer.appendInt(commandStatus)
+      buffer.appendInt(sequenceNumber)
+      buffer
+    }
   }
 
   protected final def getBodyBytes() = getStdParamBytes() ++ getTlvBytes()
@@ -45,7 +54,7 @@ abstract class PDU(val commandId: Int) {
   protected def parseStdParams(buffer: Buffer) {}
 
   protected def parseTlvs(buffer: Buffer) {
-    while (buffer.position < buffer.length - 1) {
+    while (buffer.hasRemaining) {
       val tag = buffer.readShort()
       val length = buffer.readShort()
       tlvs(tag) = new TLV(tag, buffer.read(length))

@@ -21,6 +21,7 @@ class Buffer {
   def toArray = buffer.toArray
   def length = buffer.length
   def position = _position
+  def hasRemaining = position < length - 1
 
   def ++(xs: TraversableOnce[Byte]) = {
     val newBuffer = new Buffer(buffer)
