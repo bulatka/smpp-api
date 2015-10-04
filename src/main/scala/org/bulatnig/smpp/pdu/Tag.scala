@@ -1,5 +1,8 @@
 package org.bulatnig.smpp.pdu
 
+/**
+ * TLV Tag
+ */
 object Tag {
 
   val dest_addr_subunit	= 0x0005

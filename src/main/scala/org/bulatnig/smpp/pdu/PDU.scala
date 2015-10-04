@@ -4,15 +4,18 @@ import org.bulatnig.smpp.Buffer
 
 import scala.collection.mutable
 
+/**
+ * Mutable. Not thread-safe.
+ */
 abstract class PDU(val commandId: Int) {
 
   var commandStatus = CommandStatus.ESME_ROK
   var sequenceNumber = 0
   val tlvs = new mutable.HashMap[Int, TLV]()
 
-  def toBuffer() = {
+  def toBuffer = {
     if (CommandStatus.ESME_ROK == commandStatus) {
-      val body = getBodyBytes()
+      val body = getBodyBytes
       val buffer = new Buffer()
       buffer.appendInt(PDU.HeaderLength + body.length)
       buffer.appendInt(commandId)
@@ -30,13 +33,13 @@ abstract class PDU(val commandId: Int) {
     }
   }
 
-  protected final def getBodyBytes() = getStdParamBytes() ++ getTlvBytes()
+  protected final def getBodyBytes = getStdParamBytes ++ getTlvBytes
 
-  protected def getStdParamBytes() = new Buffer()
+  protected def getStdParamBytes = new Buffer()
 
-  protected def getTlvBytes() = tlvs.values.foldLeft(new Buffer()) { (buffer, tlv) => buffer ++= tlv.toBuffer()}
+  protected def getTlvBytes = tlvs.values.foldLeft(new Buffer()) { (buffer, tlv) => buffer ++= tlv.toBuffer}
 
-  def commandLength() = toBuffer().length
+  def commandLength = toBuffer.length
 
   protected final def parse(buffer: Buffer) {
     parseHeader(buffer)

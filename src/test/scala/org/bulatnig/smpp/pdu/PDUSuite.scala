@@ -15,7 +15,7 @@ class PDUSuite extends FunSuite {
     bind.addrTon = TON.International
     bind.addrNpi = NPI.Data
     bind.addressRange = "test4"
-    assert(bind.toBuffer().toHexString == "0000002B00000001000000000000007B746573743100746573743200746573743300340103746573743400")
+    assert(bind.toBuffer.toHexString == "0000002B00000001000000000000007B746573743100746573743200746573743300340103746573743400")
   }
 
   test("BindReceiver octets should be parsed correctly") {
@@ -44,7 +44,7 @@ class PDUSuite extends FunSuite {
     val bind = new BindReceiver()
     val tlv = new TLV(Tag.dest_addr_subunit, 2, 30000)
     bind.tlvs(Tag.dest_addr_subunit) = tlv
-    assert(bind.toBuffer().toHexString == "0000001D00000001000000000000000000000000000000000500027530")
+    assert(bind.toBuffer.toHexString == "0000001D00000001000000000000000000000000000000000500027530")
   }
 
 }

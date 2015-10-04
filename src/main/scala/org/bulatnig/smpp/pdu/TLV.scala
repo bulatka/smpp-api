@@ -2,38 +2,19 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
-class TLV (val tag: Int) {
+case class TLV(tag: Int, value: Array[Byte]) {
 
-  private var _value: Array[Byte] = new Array[Byte](0)
-
-  def this(tag: Int, bytes: Array[Byte]) {
-    this(tag)
-    _value = bytes
-  }
-
+  /**
+   * Construct TLV of Integer type value of length 1, 2 or 4
+   */
   def this(tag: Int, length: Int, i: Int) {
-    this(tag)
-    _value = intToBytes(length, i)
-  }
-
-  private def intToBytes(length: Int, i: Int) = {
-    val buffer = new Buffer()
-    if (length == 1) {
-      buffer.appendByte(i)
-    } else if (length == 2) {
-      buffer.appendShort(i)
-    } else {
-      buffer.appendInt(i)
-    }
-    buffer.toArray
+    this(tag, TLV.intToBytes(length, i))
   }
 
   def this(tag: Int, cOctetString: String) {
-    this(tag)
-    _value = new Buffer().appendString(cOctetString).toArray
+    this(tag, new Buffer().appendString(cOctetString).toArray)
   }
 
-  def value = _value
   def length = value.length
 
   def readInt() = {
@@ -51,7 +32,7 @@ class TLV (val tag: Int) {
     new Buffer(value).readString()
   }
 
-  def toBuffer() = {
+  def toBuffer = {
     val buffer = new Buffer()
     buffer.appendShort(tag)
     buffer.appendShort(length)
@@ -59,4 +40,19 @@ class TLV (val tag: Int) {
     buffer
   }
 
+}
+
+private object TLV {
+
+  def intToBytes(length: Int, i: Int) = {
+    val buffer = new Buffer()
+    if (length == 1) {
+      buffer.appendByte(i)
+    } else if (length == 2) {
+      buffer.appendShort(i)
+    } else {
+      buffer.appendInt(i)
+    }
+    buffer.toArray
+  }
 }
