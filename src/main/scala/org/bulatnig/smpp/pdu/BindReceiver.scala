@@ -8,8 +8,8 @@ class BindReceiver extends PDU(CommandId.bind_receiver) {
   var password: String = null
   var systemType: String = null
   var interfaceVersion = 0
-  var addrTon = 0
-  var addrNpi = 0
+  var addrTon = TON.Unknown
+  var addrNpi = NPI.Unknown
   var addressRange: String = null
 
   def this(buffer: Buffer) {

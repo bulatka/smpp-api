@@ -6,8 +6,8 @@ class QuerySmResp extends PDU(CommandId.query_sm_resp) {
 
   var messageId: String = null
   var finalDate: String = null
-  var messageState: Int = null
-  var errorCode: Int = null
+  var messageState = MessageState.SCHEDULED
+  var errorCode: Int = 0
 
   def this(buffer: Buffer) {
     this()

@@ -5,13 +5,13 @@ import org.bulatnig.smpp.Buffer
 class ReplaceSm extends PDU(CommandId.replace_sm) {
 
   var messageId: String = null
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
   var scheduleDeliveryTime: String = null
   var validityPeriod: String = null
-  var registeredDelivery: Int = null
-  var smDefaultMsgId: Int = null
+  var registeredDelivery = 0
+  var smDefaultMsgId = 0
   var shortMessage: Array[Byte] = null
 
   def this(buffer: Buffer) {

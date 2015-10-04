@@ -5,15 +5,15 @@ import org.bulatnig.smpp.Buffer
 class DataSm extends PDU(CommandId.data_sm) {
 
   var serviceType: String = null
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
-  var destAddrTon: Int = null
-  var destAddrNpi: Int = null
+  var destAddrTon = TON.Unknown
+  var destAddrNpi = NPI.Unknown
   var destinationAddr: String = null
-  var esmClass: Int = null
-  var registeredDelivery: Int = null
-  var dataCoding: Int = null
+  var esmClass = 0
+  var registeredDelivery = 0
+  var dataCoding = 0
 
   def this(buffer: Buffer) {
     this()

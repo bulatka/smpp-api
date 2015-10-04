@@ -7,7 +7,6 @@ class PDUSuite extends FunSuite {
 
   test("BindReceiver should serialize to valid octets") {
     val bind = new BindReceiver()
-    bind.commandStatus = CommandStatus.ESME_RALYBND
     bind.sequenceNumber = 123
     bind.systemId = "test1"
     bind.password = "test2"
@@ -16,7 +15,7 @@ class PDUSuite extends FunSuite {
     bind.addrTon = TON.International
     bind.addrNpi = NPI.Data
     bind.addressRange = "test4"
-    assert(bind.toBuffer().toHexString == "0000002B00000001000000050000007B746573743100746573743200746573743300340103746573743400")
+    assert(bind.toBuffer().toHexString == "0000002B00000001000000000000007B746573743100746573743200746573743300340103746573743400")
   }
 
   test("BindReceiver octets should be parsed correctly") {

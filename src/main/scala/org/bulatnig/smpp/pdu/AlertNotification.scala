@@ -4,11 +4,11 @@ import org.bulatnig.smpp.Buffer
 
 class AlertNotification extends PDU(CommandId.alert_notification) {
 
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
-  var esmeAddrTon: Int = null
-  var esmeAddrNpi: Int = null
+  var esmeAddrTon = TON.Unknown
+  var esmeAddrNpi = NPI.Unknown
   var esmeAddr: String = null
 
   def this(buffer: Buffer) {

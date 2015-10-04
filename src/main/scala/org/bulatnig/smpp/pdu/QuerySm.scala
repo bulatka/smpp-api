@@ -5,8 +5,8 @@ import org.bulatnig.smpp.Buffer
 class QuerySm extends PDU(CommandId.query_sm) {
 
   var messageId: String = null
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
 
   def this(buffer: Buffer) {

@@ -6,11 +6,11 @@ class CancelSm extends PDU(CommandId.cancel_sm) {
 
   var serviceType: String = null
   var messageId: String = null
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
-  var destAddrTon: Int = null
-  var destAddrNpi: Int = null
+  var destAddrTon = TON.Unknown
+  var destAddrNpi = NPI.Unknown
   var destinationAddr: String = null
 
   def this(buffer: Buffer) {

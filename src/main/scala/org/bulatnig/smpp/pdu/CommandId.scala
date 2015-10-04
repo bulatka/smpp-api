@@ -1,7 +1,13 @@
 package org.bulatnig.smpp.pdu
 
 /**
- * Constant names break Scala convention to correspond protocol
+ * Identifier of SMPP operation.
+ *
+ * The command_id is encoded as a 4-octet integer value.
+ * Command_ids for request PDUs are allocated from a range of numbers; 0x00000000 to 0x000001FF.
+ * Command_ids for response PDUs are allocated from a range of numbers; 0x80000000 to 0x800001FF.
+ * The relationship between the command_id for a request PDU and its associated response
+ * PDU is that bit 31 is cleared for the request and set for the response.
  */
 object CommandId {
 

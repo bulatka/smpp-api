@@ -1,7 +1,9 @@
 package org.bulatnig.smpp.pdu
 
 /**
- * Constant names break Scala convention to correspond protocol
+ * Success or failure indicator of SMPP request.
+ *
+ * It is relevant only in the SMPP response message and should be set to NULL in SMPP request messages.
  */
 object CommandStatus {
 

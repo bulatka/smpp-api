@@ -5,21 +5,21 @@ import org.bulatnig.smpp.Buffer
 class DeliverSm extends PDU(CommandId.deliver_sm) {
 
   var serviceType: String = null
-  var sourceAddrTon: Int = null
-  var sourceAddrNpi: Int = null
+  var sourceAddrTon = TON.Unknown
+  var sourceAddrNpi = NPI.Unknown
   var sourceAddr: String = null
-  var destAddrTon: Int = null
-  var destAddrNpi: Int = null
+  var destAddrTon = TON.Unknown
+  var destAddrNpi = NPI.Unknown
   var destinationAddr: String = null
-  var esmClass: Int = null
-  var protocolId: Int = null
-  var priorityFlag: Int = null
+  var esmClass = 0
+  var protocolId = 0
+  var priorityFlag = 0
   var scheduleDeliveryTime: String = null
   var validityPeriod: String = null
-  var registeredDelivery: Int = null
-  var replaceIfPresentFlag: Int = null
-  var dataCoding: Int = null
-  var smDefaultMsgId: Int = null
+  var registeredDelivery = 0
+  var replaceIfPresentFlag = 0
+  var dataCoding = 0
+  var smDefaultMsgId = 0
   var shortMessage: Array[Byte] = null
 
   def this(buffer: Buffer) {
