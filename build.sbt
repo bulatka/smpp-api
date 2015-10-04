@@ -1,6 +1,6 @@
 name := "smpp-api"
-
-version := "1.0"
+organization := "org.bulatnig"
+version := "1.0-SNAPSHOT"
 
 scalaVersion := "2.11.7"
 
