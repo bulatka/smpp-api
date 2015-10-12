@@ -2,16 +2,12 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
-import scala.collection.mutable
-
-/**
- * Mutable. Not thread-safe.
- */
-abstract class PDU(val commandId: Int) {
-
-  var commandStatus = CommandStatus.ESME_ROK
-  var sequenceNumber = 0
-  val tlvs = new mutable.HashMap[Int, TLV]()
+abstract class PDU(
+                    val commandId: Int,
+                    val commandStatus: Int = CommandStatus.ESME_ROK,
+                    val sequenceNumber: Int = 0,
+                    val tlvs: List[TLV] = List()
+                  ) {
 
   def toBuffer = {
     if (CommandStatus.ESME_ROK == commandStatus) {
@@ -37,35 +33,31 @@ abstract class PDU(val commandId: Int) {
 
   protected def getStdParamBytes = new Buffer()
 
-  protected def getTlvBytes = tlvs.values.foldLeft(new Buffer()) { (buffer, tlv) => buffer ++= tlv.toBuffer}
+  protected def getTlvBytes = tlvs.foldLeft(new Buffer()) { (buffer, tlv) => buffer ++= tlv.toBuffer }
 
   def commandLength = toBuffer.length
-
-  protected final def parse(buffer: Buffer) {
-    parseHeader(buffer)
-    parseStdParams(buffer)
-    parseTlvs(buffer)
-  }
-
-  protected def parseHeader(buffer: Buffer) {
-    buffer.readInt() // length already checked
-    buffer.readInt() // command id already known
-    commandStatus = buffer.readInt()
-    sequenceNumber = buffer.readInt()
-  }
-
-  protected def parseStdParams(buffer: Buffer) {}
-
-  protected def parseTlvs(buffer: Buffer) {
-    while (buffer.hasRemaining) {
-      val tag = buffer.readShort()
-      val length = buffer.readShort()
-      tlvs(tag) = new TLV(tag, buffer.read(length))
-    }
-  }
 
 }
 
 object PDU {
   val HeaderLength = 16
+
+  def parseHeader(buffer: Buffer) = {
+    buffer.readInt() // length already checked
+    PDUHeader(buffer.readInt(), buffer.readInt(), buffer.readInt())
+  }
+
+  def parseTlvs(buffer: Buffer): List[TLV] = {
+    if (buffer.isAvailable) parseTlv(buffer) :: parseTlvs(buffer)
+    else Nil
+  }
+
+  private def parseTlv(buffer: Buffer) = {
+    val tag = buffer.readShort()
+    val length = buffer.readShort()
+    new TLV(tag, buffer.read(length))
+  }
+
 }
+
+case class PDUHeader(commandId: Int, commandStatus: Int, sequenceNumber: Int)

@@ -2,32 +2,14 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
-class BindTransceiver extends PDU(CommandId.bind_transceiver) {
+case class BindTransceiver(override val commandStatus: Int = CommandStatus.ESME_ROK,
+                           override val sequenceNumber: Int = 0,
+                           systemId: String = null, password: String = null, systemType: String = null, interfaceVersion: Int = 0,
+                           addrTon: Int = TON.Unknown, addrNpi: Int = NPI.Unknown, addressRange: String = null,
+                           override val tlvs: List[TLV] = List())
+  extends PDU(CommandId.bind_transceiver, commandStatus, sequenceNumber, tlvs) with BindRequest {
 
-  var systemId: String = null
-  var password: String = null
-  var systemType: String = null
-  var interfaceVersion = 0
-  var addrTon = TON.Unknown
-  var addrNpi = NPI.Unknown
-  var addressRange: String = null
-
-  def this(buffer: Buffer) {
-    this()
-    parse(buffer)
-  }
-
-  override protected def parseStdParams(buffer: Buffer) {
-    systemId = buffer.readString()
-    password = buffer.readString()
-    systemType = buffer.readString()
-    interfaceVersion = buffer.readByte()
-    addrTon = buffer.readByte()
-    addrNpi = buffer.readByte()
-    addressRange = buffer.readString()
-  }
-
-  override protected def getStdParamBytes() = {
+  override protected def getStdParamBytes = {
     val buffer = new Buffer()
     buffer.appendString(systemId)
     buffer.appendString(password)
@@ -38,4 +20,17 @@ class BindTransceiver extends PDU(CommandId.bind_transceiver) {
     buffer.appendString(addressRange)
     buffer
   }
+
+}
+
+object BindTransceiver {
+
+  def apply(buffer: Buffer) = {
+    val header = PDU.parseHeader(buffer)
+    new BindTransceiver(header.commandStatus, header.sequenceNumber,
+      buffer.readString(), buffer.readString(), buffer.readString(), buffer.readByte(),
+      buffer.readByte(), buffer.readByte(), buffer.readString(),
+      PDU.parseTlvs(buffer))
+  }
+
 }

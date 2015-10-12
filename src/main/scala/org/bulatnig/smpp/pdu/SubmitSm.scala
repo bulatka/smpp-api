@@ -2,55 +2,18 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
-class SubmitSm extends PDU(CommandId.submit_sm) {
+case class SubmitSm(override val commandStatus: Int = CommandStatus.ESME_ROK,
+                    override val sequenceNumber: Int = 0,
+                    serviceType: String = null, sourceAddrTon: Int = TON.Unknown, sourceAddrNpi: Int = NPI.Unknown,
+                    sourceAddr: String = null, destAddrTon: Int = TON.Unknown, destAddrNpi: Int = NPI.Unknown,
+                    destinationAddr: String = null, esmClass: Int = 0, protocolId: Int = 0, priorityFlag: Int = 0,
+                    scheduleDeliveryTime: String = null, validityPeriod: String = null, registeredDelivery: Int = 0,
+                    replaceIfPresentFlag: Int = 0, dataCoding: Int = 0, smDefaultMsgId: Int = 0,
+                    shortMessage: Array[Byte] = null,
+                    override val tlvs: List[TLV] = List())
+  extends PDU(CommandId.submit_sm, commandStatus, sequenceNumber, tlvs) {
 
-  var serviceType: String = null
-  var sourceAddrTon = TON.Unknown
-  var sourceAddrNpi = NPI.Unknown
-  var sourceAddr: String = null
-  var destAddrTon = TON.Unknown
-  var destAddrNpi = NPI.Unknown
-  var destinationAddr: String = null
-  var esmClass = 0
-  var protocolId = 0
-  var priorityFlag = 0
-  var scheduleDeliveryTime: String = null
-  var validityPeriod: String = null
-  var registeredDelivery = 0
-  var replaceIfPresentFlag = 0
-  var dataCoding = 0
-  var smDefaultMsgId = 0
-  var shortMessage: Array[Byte] = null
-
-  def this(buffer: Buffer) {
-    this()
-    parse(buffer)
-  }
-
-  override protected def parseStdParams(buffer: Buffer) {
-    serviceType = buffer.readString()
-    sourceAddrTon = buffer.readByte()
-    sourceAddrNpi = buffer.readByte()
-    sourceAddr = buffer.readString()
-    destAddrTon= buffer.readByte()
-    destAddrNpi = buffer.readByte()
-    destinationAddr = buffer.readString()
-    esmClass = buffer.readByte()
-    protocolId = buffer.readByte()
-    priorityFlag = buffer.readByte()
-    scheduleDeliveryTime = buffer.readString()
-    validityPeriod = buffer.readString()
-    registeredDelivery = buffer.readByte()
-    replaceIfPresentFlag = buffer.readByte()
-    dataCoding = buffer.readByte()
-    smDefaultMsgId = buffer.readByte()
-    val smLength = buffer.readByte()
-    if (smLength > 0) {
-      shortMessage = buffer.read(smLength)
-    }
-  }
-
-  override protected def getStdParamBytes() = {
+  override protected def getStdParamBytes = {
     val buffer = new Buffer()
     buffer.appendString(serviceType)
     buffer.appendByte(sourceAddrTon)
@@ -75,6 +38,25 @@ class SubmitSm extends PDU(CommandId.submit_sm) {
       buffer ++= shortMessage
     }
     buffer
+  }
+
+}
+
+object SubmitSm {
+
+  def apply(buffer: Buffer) = {
+    val header = PDU.parseHeader(buffer)
+    new SubmitSm(header.commandStatus, header.sequenceNumber,
+    buffer.readString(),
+    buffer.readByte(), buffer.readByte(), buffer.readString(),
+    buffer.readByte(), buffer.readByte(), buffer.readString(),
+    buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readString(), buffer.readString(),
+    buffer.readByte(), buffer.readByte(), buffer.readByte(), buffer.readByte(), {
+      val smLength = buffer.readByte()
+      if (smLength > 0) buffer.read(smLength)
+      else Array.empty
+    },
+    PDU.parseTlvs(buffer))
   }
 
 }

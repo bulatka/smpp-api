@@ -2,30 +2,14 @@ package org.bulatnig.smpp.pdu
 
 import org.bulatnig.smpp.Buffer
 
-class AlertNotification extends PDU(CommandId.alert_notification) {
+case class AlertNotification(override val commandStatus: Int = CommandStatus.ESME_ROK,
+                             override val sequenceNumber: Int = 0,
+                             sourceAddrTon: Int = TON.Unknown, sourceAddrNpi: Int = NPI.Unknown, sourceAddr: String = null,
+                             esmeAddrTon: Int = TON.Unknown, esmeAddrNpi: Int = NPI.Unknown, esmeAddr: String = null,
+                             override val tlvs: List[TLV] = List())
+  extends PDU(CommandId.alert_notification, commandStatus, sequenceNumber, tlvs) {
 
-  var sourceAddrTon = TON.Unknown
-  var sourceAddrNpi = NPI.Unknown
-  var sourceAddr: String = null
-  var esmeAddrTon = TON.Unknown
-  var esmeAddrNpi = NPI.Unknown
-  var esmeAddr: String = null
-
-  def this(buffer: Buffer) {
-    this()
-    parse(buffer)
-  }
-
-  override protected def parseStdParams(buffer: Buffer) {
-    sourceAddrTon = buffer.readByte()
-    sourceAddrNpi = buffer.readByte()
-    sourceAddr = buffer.readString()
-    esmeAddrTon = buffer.readByte()
-    esmeAddrNpi = buffer.readByte()
-    esmeAddr = buffer.readString()
-  }
-
-  override protected def getStdParamBytes() = {
+  override protected def getStdParamBytes = {
     val buffer = new Buffer()
     buffer.appendByte(sourceAddrTon)
     buffer.appendByte(sourceAddrNpi)
@@ -34,6 +18,18 @@ class AlertNotification extends PDU(CommandId.alert_notification) {
     buffer.appendByte(esmeAddrNpi)
     buffer.appendString(esmeAddr)
     buffer
+  }
+
+}
+
+object AlertNotification {
+
+  def apply(buffer: Buffer) = {
+    val header = PDU.parseHeader(buffer)
+    new AlertNotification(header.commandStatus, header.sequenceNumber,
+      buffer.readByte(), buffer.readByte(), buffer.readString(),
+      buffer.readByte(), buffer.readByte(), buffer.readString(),
+      PDU.parseTlvs(buffer))
   }
 
 }
